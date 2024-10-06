@@ -1,0 +1,10 @@
+column_width = 160
+line_endings = "Unix" # "Unix" (LF), "Windows" (CRLF)
+indent_type = "Spaces" # "Tabs", "Spaces"
+indent_width = 2
+quote_style = "ForceDouble" # "AutoPreferDouble", "AutoPreferSingle", "ForceDouble", "ForceSingle"
+call_parentheses = "Always" # "Always", "NoSingleString", "NoSingleTable", "None", "Input"
+collapse_simple_statement = "Never" # "Never", "FunctionOnly", "ConditionalOnly", "Always"
+
+[sort_requires]
+enabled = false
