@@ -1,5 +1,6 @@
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
+local act = wezterm.action
 local mux = wezterm.mux
 
 -- Start full screen
@@ -63,40 +64,50 @@ return {
   send_composed_key_when_left_alt_is_pressed = false,
   send_composed_key_when_right_alt_is_pressed = false,
   keys = {
+    -- Clears the scrollback and viewport, and then sends CTRL-L to ask the shell to redraw its prompt
+    {
+      key = "k",
+      mods = "CMD",
+      action = act.Multiple({
+        act.ClearScrollback("ScrollbackAndViewport"),
+        act.SendKey({ key = "L", mods = "CTRL" }),
+      }),
+    },
+
     -- PANE MANAGEMENT --
     --
     -- Zoom pane
-    { key = "f", mods = "ALT", action = wezterm.action.TogglePaneZoomState },
+    { key = "f", mods = "ALT", action = act.TogglePaneZoomState },
     -- Close pane
-    { key = "e", mods = "ALT", action = wezterm.action.CloseCurrentPane({ confirm = true }) },
+    { key = "e", mods = "ALT", action = act.CloseCurrentPane({ confirm = true }) },
     -- Toggle pane
-    { key = "t", mods = "ALT", action = wezterm.action.TogglePaneZoomState },
+    -- { key = "t", mods = "ALT", action = act.TogglePaneZoomState },
     -- PANE RESIZE --
     --
     -- Move border of the focused pane to the right
-    { key = "l", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Right", 1 }) },
+    { key = "l", mods = "ALT|SHIFT", action = act.AdjustPaneSize({ "Right", 1 }) },
     -- Move border of the focused pane to the left
-    { key = "h", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Left", 1 }) },
+    { key = "h", mods = "ALT|SHIFT", action = act.AdjustPaneSize({ "Left", 1 }) },
     -- Move border of the focused pane to the top
-    { key = "k", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Up", 1 }) },
+    { key = "k", mods = "ALT|SHIFT", action = act.AdjustPaneSize({ "Up", 1 }) },
     -- Move border of the focused pane to the bottom
-    { key = "j", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Down", 1 }) },
+    { key = "j", mods = "ALT|SHIFT", action = act.AdjustPaneSize({ "Down", 1 }) },
     -- MOVE FOCUS BETWEEN PANES --
     --
     -- Move focus to the pane right
-    { key = "l", mods = "CTRL|SHIFT", action = wezterm.action.ActivatePaneDirection("Right") },
+    { key = "l", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Right") },
     -- Move focus to the pane left
-    { key = "h", mods = "CTRL|SHIFT", action = wezterm.action.ActivatePaneDirection("Left") },
+    { key = "h", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Left") },
     -- Move focus to the pane top
-    { key = "k", mods = "CTRL|SHIFT", action = wezterm.action.ActivatePaneDirection("Up") },
+    { key = "k", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Up") },
     -- Move focus to the pane bottom
-    { key = "j", mods = "CTRL|SHIFT", action = wezterm.action.ActivatePaneDirection("Down") },
+    { key = "j", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Down") },
     -- TABS --
     --
     -- Switch to the next tab
-    { key = "]", mods = "LEADER", action = wezterm.action.ActivateTabRelative(1) },
+    { key = "]", mods = "LEADER", action = act.ActivateTabRelative(1) },
     -- Switch to the previous tab
-    { key = "[", mods = "LEADER", action = wezterm.action.ActivateTabRelative(-1) },
+    { key = "[", mods = "LEADER", action = act.ActivateTabRelative(-1) },
     -- NEW PANE --
     --
     -- Split pane vertically
@@ -128,15 +139,20 @@ return {
       action = wezterm.action_callback(function(_, pane)
         local tab = pane:tab()
         local panes = tab:panes_with_info()
+        -- If there is only one pane, split it vertically
         if #panes == 1 then
           pane:split({
             direction = "Right",
-            size = 0.3,
+            size = 0.33,
           })
+        -- If there are two panes, toggle between them (zoom)
         elseif not panes[1].is_zoomed then
+          -- Activate the first pane and zoom it
           panes[1].pane:activate()
           tab:set_zoomed(true)
+        -- If the first pane is zoomed, deactivate zoom
         elseif panes[1].is_zoomed then
+          -- Deactivate zoom and activate the second pane
           tab:set_zoomed(false)
           panes[2].pane:activate()
         end
