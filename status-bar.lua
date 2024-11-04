@@ -85,7 +85,7 @@ function module.apply_to_config(config)
   end
 
   local function getGitDiffStats(cwd)
-    local success, gitStat, _ = wezterm.run_child_process({ "git", "-C", cwd, "diff", "--shortstat" })
+    local success, gitStat, stderr = wezterm.run_child_process({ "git", "-C", cwd, "diff", "--shortstat" })
 
     if success then
       local _, _, changeCountString = string.find(gitStat, "(%d+) files? changed")
