@@ -53,7 +53,7 @@ config.window_decorations = "RESIZE" -- Other options are: "TITLE", "TITLE|RESIZ
 config.window_padding = { left = 15, right = 15, top = 5, bottom = 5 }
 
 config.use_fancy_tab_bar = true
-config.hide_tab_bar_if_only_one_tab = true
+config.hide_tab_bar_if_only_one_tab = false
 config.tab_bar_at_bottom = false
 config.switch_to_last_active_tab_when_closing_tab = true
 -- config.tab_max_width = 30

@@ -76,6 +76,17 @@ function module.apply_to_config(config)
     -- Show Debug overlay
     { key = "d", mods = "LEADER", action = act.ShowDebugOverlay },
 
+    -- SWAP PANES
+    --
+    -- show the pane selection mode and swap the active and selected panes
+    {
+      key = "s",
+      mods = "LEADER",
+      action = act.PaneSelect({
+        mode = "SwapWithActive",
+      }),
+    },
+
     -- SWITCH PANES
 
     -- Switch to the pane above
